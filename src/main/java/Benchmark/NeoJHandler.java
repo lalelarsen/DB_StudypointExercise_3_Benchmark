@@ -24,26 +24,31 @@ import static org.neo4j.driver.v1.Values.parameters;
 public class NeoJHandler {
     
     private Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "class"));
-    private Session session = driver.session();
+    private Session session;
     
-    String[] depths = {"match (p1:Person)-[:ENDORSES]->(p2:Person) where p1.name = {name} return p2",
-        "match (p1:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p3:Person) where p1.name = {name} return p3;",
-        "match (p1:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p4:Person) where p1.name = {name} return p4",
+    String[] depths = {
+        "match (p:Person)-[:ENDORSES]->(p1:Person) where p.name = {name} return p1",
+        "match (p:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p2:Person) where p.name = {name} return p2;",
+        "match (p:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p3:Person) where p.name = {name} return p3",
         "match (p:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p4:Person) where p.name = {name} return p4",
         "match (p:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(:Person)-[:ENDORSES]->(p5:Person) where p.name = {name} return p5"
     };
     
     public long NeoQuery(String name, int depth){
-        long startT = System.currentTimeMillis();
+        session = driver.session();
         
         Map<String, Object> parameters = new HashMap();
         parameters.put("name", name);
+        
+        long startT = System.currentTimeMillis();
         
         StatementResult result = session.run(depths[depth-1], parameters);
         
         long endT = System.currentTimeMillis();
         
-        return endT-startT;
+        session.close();
+        
+        return endT-startT; 
     }
     
     public void a() {

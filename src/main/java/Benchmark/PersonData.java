@@ -22,16 +22,16 @@ public class PersonData {
     static Connection con = null;
 
     public PersonData() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/endorsement";
-        String user = "lalelarsen";
-        String password = "frederik2000";
+        String url = "jdbc:mysql://localhost:3306/social_network";
+        String user = "root";
+        String password = "pwd";
         con = DriverManager.getConnection(url, user, password);
 
     }
 
     public String[] getPeople() throws SQLException {
         String[] list = new String[20];
-        String query = "select name from persons";
+        String query = "select name from Person";
         Statement st = con.createStatement();
         ResultSet rs = st.executeQuery(query);
         
